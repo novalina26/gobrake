@@ -74,12 +74,14 @@ func (p *poller) Stop() {
 	close(p.closer)
 }
 
-func (rc *remoteConfig) Poll(callback func()) {
+type configCallback func(*remoteConfig)
+
+func (rc *remoteConfig) Poll(cb configCallback) {
 	rc.poller = newPoller(rc.Interval())
-	go rc.poll(callback)
+	go rc.poll(cb)
 }
 
-func (rc *remoteConfig) poll(callback func()) {
+func (rc *remoteConfig) poll(cb configCallback) {
 	for {
 		select {
 		case <-rc.poller.closer:
@@ -98,7 +100,7 @@ func (rc *remoteConfig) poll(callback func()) {
 			rc.JSON = cfg
 			rc.poller.ticker = time.NewTicker(rc.Interval())
 
-			callback()
+			cb(rc)
 		}
 	}
 }
@@ -184,7 +186,7 @@ func (rc *remoteConfig) ErrorHost() string {
 	return ""
 }
 
-func (rc *remoteConfig) ApmHost() string {
+func (rc *remoteConfig) APMHost() string {
 	for _, s := range rc.JSON.RemoteSettings {
 		if s.Name == apmSetting {
 			return s.Endpoint

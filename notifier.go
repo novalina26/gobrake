@@ -220,10 +220,11 @@ func NewNotifierWithOptions(opt *NotifierOptions) *Notifier {
 		n.AddFilter(NewBlocklistKeysFilter(opt.KeysBlocklist...))
 	}
 
-	n.remoteConfig.Poll(func() {
-		opt.DisableErrorNotifications = n.remoteConfig.EnabledErrorNotifications()
-		opt.DisableAPM = n.remoteConfig.EnabledAPM()
-		opt.Host = n.remoteConfig.ErrorHost()
+	n.remoteConfig.Poll(func(rc *remoteConfig) {
+		opt.DisableErrorNotifications = rc.EnabledErrorNotifications()
+		opt.DisableAPM = rc.EnabledAPM()
+		opt.Host = rc.ErrorHost()
+		opt.APMHost = rc.APMHost()
 	})
 
 	return n

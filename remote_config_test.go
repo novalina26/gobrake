@@ -182,7 +182,7 @@ var _ = Describe("NewRemoteSettings", func() {
 		})
 	})
 
-	Describe("ApmHost", func() {
+	Describe("APMHost", func() {
 		Context("when JSON settings has the 'apm' setting", func() {
 			BeforeEach(func() {
 				rc.JSON.RemoteSettings = append(
@@ -200,7 +200,7 @@ var _ = Describe("NewRemoteSettings", func() {
 				})
 
 				It("returns the endpoint", func() {
-					Expect(rc.ApmHost()).To(
+					Expect(rc.APMHost()).To(
 						Equal("http://api.example.com"),
 					)
 				})
@@ -208,14 +208,14 @@ var _ = Describe("NewRemoteSettings", func() {
 
 			Context("and when an endpoint is NOT specified", func() {
 				It("returns an empty string", func() {
-					Expect(rc.ApmHost()).To(Equal(""))
+					Expect(rc.APMHost()).To(Equal(""))
 				})
 			})
 		})
 
 		Context("when JSON settings has no 'apm' setting", func() {
 			It("returns an empty string", func() {
-				Expect(rc.ApmHost()).To(Equal(""))
+				Expect(rc.APMHost()).To(Equal(""))
 			})
 		})
 	})
