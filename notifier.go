@@ -221,8 +221,14 @@ func NewNotifierWithOptions(opt *NotifierOptions) *Notifier {
 	}
 
 	n.remoteConfig.Poll(func(rc *remoteConfig) {
-		opt.DisableErrorNotifications = rc.EnabledErrorNotifications()
-		opt.DisableAPM = rc.EnabledAPM()
+		fmt.Printf(
+			"Applying config\n%v\nAPM:%v\nErrors:%v\n\n",
+			rc.JSON,
+			rc.JSON.RemoteSettings[1],
+			rc.JSON.RemoteSettings[0],
+		)
+		opt.DisableErrorNotifications = !rc.EnabledErrorNotifications()
+		opt.DisableAPM = !rc.EnabledAPM()
 		opt.Host = rc.ErrorHost()
 		opt.APMHost = rc.APMHost()
 	})

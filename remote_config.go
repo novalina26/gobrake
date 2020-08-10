@@ -137,10 +137,7 @@ func (rc *remoteConfig) fetchConfig() (*RemoteConfigJSON, error) {
 }
 
 func (rc *remoteConfig) Interval() time.Duration {
-	fmt.Printf("rc.JSON.PollSec: %d\n", rc.JSON.PollSec)
 	if rc.JSON.PollSec > 0 {
-		fmt.Println("new poll sec!")
-		fmt.Println(time.Duration(rc.JSON.PollSec) * time.Second)
 		return time.Duration(rc.JSON.PollSec) * time.Second
 	}
 
@@ -178,20 +175,24 @@ func (rc *remoteConfig) EnabledAPM() bool {
 
 func (rc *remoteConfig) ErrorHost() string {
 	for _, s := range rc.JSON.RemoteSettings {
-		if s.Name == errorSetting {
+		if s.Name == errorSetting && s.Endpoint != "" {
 			return s.Endpoint
+		} else {
+			return rc.opt.Host
 		}
 	}
 
-	return ""
+	return rc.opt.Host
 }
 
 func (rc *remoteConfig) APMHost() string {
 	for _, s := range rc.JSON.RemoteSettings {
-		if s.Name == apmSetting {
+		if s.Name == apmSetting && s.Endpoint != "" {
 			return s.Endpoint
+		} else {
+			return rc.opt.Host
 		}
 	}
 
-	return ""
+	return rc.opt.APMHost
 }
