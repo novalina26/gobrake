@@ -188,6 +188,8 @@ type Notifier struct {
 	Queries *queryStats
 	Queues  *queueStats
 
+	remoteConfig *remoteConfig
+
 	rateLimitReset uint32 // atomic
 	_closed        uint32 // atomic
 }
@@ -202,6 +204,8 @@ func NewNotifierWithOptions(opt *NotifierOptions) *Notifier {
 		Routes:  newRoutes(opt),
 		Queries: newQueryStats(opt),
 		Queues:  newQueueStats(opt),
+
+		remoteConfig: newRemoteConfig(opt),
 	}
 
 	n.AddFilter(httpUnsolicitedResponseFilter)
@@ -215,6 +219,12 @@ func NewNotifierWithOptions(opt *NotifierOptions) *Notifier {
 	if len(opt.KeysBlocklist) > 0 {
 		n.AddFilter(NewBlocklistKeysFilter(opt.KeysBlocklist...))
 	}
+
+	n.remoteConfig.Poll(func() {
+		opt.DisableErrorNotifications = n.remoteConfig.EnabledErrorNotifications()
+		opt.DisableAPM = n.remoteConfig.EnabledAPM()
+		opt.Host = n.remoteConfig.ErrorHost()
+	})
 
 	return n
 }
@@ -411,6 +421,7 @@ func (n *Notifier) Flush() {
 }
 
 func (n *Notifier) Close() error {
+	n.remoteConfig.StopPolling()
 	return n.CloseTimeout(waitTimeout)
 }
 

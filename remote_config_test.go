@@ -11,7 +11,10 @@ var _ = Describe("NewRemoteSettings", func() {
 	var rc *remoteConfig
 
 	BeforeEach(func() {
-		rc = newRemoteConfig()
+		rc = newRemoteConfig(&NotifierOptions{
+			ProjectId:  1,
+			ProjectKey: "key",
+		})
 	})
 
 	Describe("Interval", func() {
@@ -39,7 +42,7 @@ var _ = Describe("NewRemoteSettings", func() {
 			It("returns the default config route", func() {
 				url := "https://v1-staging-notifier-configs" +
 					".s3.amazonaws.com/2020-06-18/config/" +
-					"0/config.json"
+					"1/config.json"
 				Expect(rc.ConfigRoute()).To(Equal(url))
 			})
 		})
